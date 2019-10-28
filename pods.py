@@ -119,13 +119,20 @@ def wget_episode(ep):
         print('... file already downloaded')
         return file_name
     
-    file_name = wget.download(ep['url'], bar=wget.bar_thermometer)
+    file_name = wget.download(ep['url'], bar=wget.bar_adaptive)
     return file_name
 
-def osx_play_episode(filename):
+def open_episode(path):
     import os
-    
-    os.system('open {}'.format(filename))
+    import platform
+    import subprocess
+
+    if platform.system() == "Windows":
+        os.startfile(path)
+    elif platform.system() == "Darwin":
+        subprocess.Popen(["open", path])
+    else:
+        subprocess.Popen(["xdg-open", path])
 
 
 # Testing time. We will now play war part1.
@@ -140,7 +147,7 @@ def osx_play_episode(filename):
 #    file = wget_episode(feeds[0])
 #    print(file)
 #    print("now playing")
-#    osx_play_episode(file)
+#    open_episode(file)
 #else:
 #    print('Bad number of fields, need only one!')
 
@@ -226,7 +233,7 @@ def repl(urls):
                 episode = selected_episodes[episode_num - 1]
                 print('Playing...{}'.format(episode['title']))
                 file = wget_episode(episode)
-                osx_play_episode(file)
+                open_episode(file)
         print()
 
 
