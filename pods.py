@@ -1,22 +1,13 @@
 # -*- coding: utf-8 -*-
-"""
-Spyder Editor
 
-This is a temporary script file.
-"""
-
-#!/usr/bin/env python
-# coding: utf-8
-
-# Welcome to podcast finder - a simple app to download your podcasts from a feed link and play for you
-
-# First we setup a list of podcast urls. This list will be read by a function to accumulate all the links and titles.
-
-# In[1]:
+from tqdm import tqdm
 
 
 podcast_urls = ['https://feeds.pacific-content.com/commandlineheroes',
-                'http://feeds.codenewbie.org/cnpodcast.xml']
+                'http://feeds.codenewbie.org/cnpodcast.xml',
+                'http://feeds.codenewbie.org/basecs_podcast.xml',
+                'https://cppcast.com/episode/index.xml',
+                'https://lexfridman.com/category/ai/feed']
 
 
 # Now we write a function to get the feed information for the links. We use a handy Python library called `feedparser` which reads a link and returns a giant `dict` of all the information contained in the xml file.
@@ -55,7 +46,11 @@ def get_feed_info(url):
 
 
 def get_all_podcasts(urls):
-    return [get_feed_info(u) for u in urls]
+    feeds = []
+    for u in tqdm(urls):
+        feeds.append(get_feed_info(u))
+
+    return feeds
 
 
 
