@@ -7,6 +7,7 @@ podcast_urls = ['https://feeds.pacific-content.com/commandlineheroes',
                 'http://feeds.codenewbie.org/cnpodcast.xml',
                 'http://feeds.codenewbie.org/basecs_podcast.xml',
                 'https://cppcast.com/episode/index.xml',
+                'https://feeds.simplecast.com/gvtxUiIf',
                 'https://lexfridman.com/category/ai/feed']
 
 
@@ -65,7 +66,9 @@ def search_podcast(podcasts, term=None):
     if not term:
         # Match everything if searching for nothing specific
         return podcasts
-    
+   
+    term = re.escape(term)
+
     return [p for p in podcasts if re.match('''.*{}.*'''.format(str(term)), p['feed_title'], re.IGNORECASE)]
 
 def search_episode_in_feed(feeds, term=None):
@@ -74,7 +77,9 @@ def search_episode_in_feed(feeds, term=None):
     if not term:
         # Match everything if searching for nothing specific
         return feeds
-    
+   
+    term = re.escape(term)
+
     return [f for f in feeds if re.match('''.*{}.*'''.format(str(term)), f['title'], re.IGNORECASE)]
 
 def search_episode_in_podcast(p, term=None):
