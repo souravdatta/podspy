@@ -11,39 +11,14 @@ podcast_urls = ['https://feeds.pacific-content.com/commandlineheroes',
                 'https://lexfridman.com/category/ai/feed']
 
 
-# Now we write a function to get the feed information for the links. We use a handy Python library called `feedparser` which reads a link and returns a giant `dict` of all the information contained in the xml file.
-
-# In[7]:
-
-
-#import sys
-#get_ipython().system('conda install --yes --prefix {sys.prefix} feedparser wget')
-
-
-# In[22]:
-
-
 def get_feed_info(url):
     import feedparser
-    
     feed_info = feedparser.parse(url)
     title = feed_info['feed']['title_detail']['value']
     entries = feed_info['entries']
-    feed_episodes = [dict(title=f['title'], url=f['links'][1]['href']) for f in entries]
+    feed_episodes = [dict(title=f['title'], url=f['links'][1]['href'])
+            for f in entries]
     return dict(feed_title=title, feed_episodes=feed_episodes)
-
-
-# Lets test this function.
-
-# In[23]:
-
-
-#print(get_feed_info(podcast_urls[0]))
-
-
-# That seems to be right. Lets move on and create a global data structure for all such feed. Now we need to iterate over the urls and collect them in a single `dict`.
-
-# In[24]:
 
 
 def get_all_podcasts(urls):
@@ -54,36 +29,29 @@ def get_all_podcasts(urls):
     return feeds
 
 
-
-# Now we create a few functions to search in podcast titles and episode titles
-
-# In[58]:
-
-
 def search_podcast(podcasts, term=None):
     import re
-    
     if not term:
         # Match everything if searching for nothing specific
         return podcasts
-   
     term = re.escape(term)
 
-    return [p for p in podcasts if re.match('''.*{}.*'''.format(str(term)), p['feed_title'], re.IGNORECASE)]
+    return [p for p in podcasts if re.match('''.*{}.*'''.format(str(term)),
+        p['feed_title'], re.IGNORECASE)]
+
 
 def search_episode_in_feed(feeds, term=None):
     import re
-    
     if not term:
         # Match everything if searching for nothing specific
         return feeds
-   
     term = re.escape(term)
-
     return [f for f in feeds if re.match('''.*{}.*'''.format(str(term)), f['title'], re.IGNORECASE)]
+
 
 def search_episode_in_podcast(p, term=None):
     return search_episode_in_feed(p['feed_episodes'], term)
+
 
 def search_episode_in_all_podcasts(ps, term=None):
     feeds = [search_episode_in_podcast(p, term) for p in ps]
@@ -92,21 +60,6 @@ def search_episode_in_all_podcasts(ps, term=None):
         for f in fs:
             all_feeds.append(f)
     return all_feeds
-
-
-# Ok so time for testing. We will first search for "command line" and if we get a podcast then search for "war" in it.
-
-# In[60]:
-
-
-#pl = search_podcast(podcasts, "command line")
-#feeds = search_episode_in_all_podcasts(pl, "war")
-#print(feeds)
-
-
-# Ok! Now lets make a function to get the podcast and play it. We will use `open` command for a OSX for now. Later we shall customize it for other OSs. 
-
-# In[64]:
 
 
 def wget_episode(ep):
@@ -122,6 +75,7 @@ def wget_episode(ep):
     file_name = wget.download(ep['url'], bar=wget.bar_adaptive)
     return file_name
 
+
 def open_episode(path):
     import os
     import platform
@@ -134,25 +88,6 @@ def open_episode(path):
     else:
         subprocess.Popen(["xdg-open", path])
 
-
-# Testing time. We will now play war part1.
-
-# In[67]:
-
-
-#feeds = search_episode_in_all_podcasts(search_podcast(podcasts, "command line"), "wars_part 2")
-#
-#if len(feeds) == 1:
-#    print("getting file")
-#    file = wget_episode(feeds[0])
-#    print(file)
-#    print("now playing")
-#    open_episode(file)
-#else:
-#    print('Bad number of fields, need only one!')
-
-
-# In[ ]:
 
 def repl(urls):
     import re
@@ -240,8 +175,3 @@ def repl(urls):
 if __name__ == '__main__':
     repl(podcast_urls)
 
-                
-                
-                
-                
-                
